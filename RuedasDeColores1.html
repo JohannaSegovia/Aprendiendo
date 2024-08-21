@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selector de Color</title>
+</head>
+<body>
+    <h1>Elige un color para el rectángulo</h1>
+
+    <script>
+        // Crear el campo de entrada de tipo color
+        let color = document.createElement('input');
+        color.type = 'color';
+        color.value = '#add8e6'; // Valor por defecto
+
+        // Agregar el campo al cuerpo del documento para que sea visible
+        document.body.appendChild(color);
+
+        // Agregar un listener para capturar el color seleccionado
+        color.addEventListener('input', function() {
+            let selectedColor = color.value;
+            console.log("El color elegido es:", selectedColor);
+        });
+
+        // Opcional: activar el selector de color automáticamente
+        color.click();
+    </script>
+</body>
+</html>

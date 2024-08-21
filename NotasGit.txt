@@ -1,0 +1,142 @@
+https://github.com/JohannaSegovia/Aprendiendo.git
+
+echo "# Aprendiendo" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/JohannaSegovia/Aprendiendo.git
+git push -u origin main
+
+
+
+*************************************************************************
+Forzar la eliminación de todos los archivos y commits (manteniendo el repositorio)
+
+	git clone https://github.com/usuario/nombre_del_repositorio.git
+	cd nombre_del_repositorio
+	
+	//Eliminar todos los archivos incluso los ocultos menos .git
+	rm -rf *
+	rm -rf .[^.]* 
+	rm -rf .gitignore 
+	
+	//Ahora hay que hacer un commit para reflejar los cambios
+	git add .
+	git commit -m "Eliminar todos los archivos"
+	
+	//Forzar un push en la rama principal
+	git push origin --force
+
+
+*************************************************************************	
+Una vez creado seguir estos pasos
+	//Clonar
+	git clone https://github.com/JohannaSegovia/Aprendiendo.git
+	
+	//Ir a la carpeta y luego abrelo
+	cd nombre_del_repositorio
+	code .
+	
+*************************************************************************
+Una vez que estés listo para guardar los cambios, puedes agregar los archivos modificados al área de preparación. 
+	//Puedes hacer esto desde la terminal con:
+	git add .
+	git commit -m "Descripción de los cambios"
+	git push origin main
+
+	
+*************************************************************************
+Purgar las branches en el visualCode
+	//Eliminar ramas locales
+	git branch
+	git branch -d nombre_de_la_rama
+	git branch -D nombre_de_la_rama - Para forzar
+
+	//Tambien las ramas remotas
+	git branch -r
+	git push origin --delete nombre_de_la_rama
+	
+	//Luego eliminar cache
+	//Ir a pestaña de "Source Control"
+	//Haz clic en el menú de las ramas (branch icon) en la barra de estado o usa el comando F1 y busca Git: Checkout to....
+	//Elige una rama existente para actualizar la vista de ramas.
+	//Verifica que las ramas eliminadas ya no estén listadas.
+	
+	//Eliminar referencias remotas obsoletas
+	git fetch --prune
+	
+	//Elimina la configuración del remoto
+	git remote -v
+	git remote remove origin
+
+
+*************************************************************************	
+Si planeas continuar trabajando en el proyecto, pero con un nuevo repositorio en GitHub:
+
+	//En tu repositorio local, agrega el nuevo remoto
+	git remote add origin https://github.com/tu_usuario/tu_nuevo_repositorio.git
+	
+	//Una vez que hayas agregado el nuevo remoto, sube tu proyecto
+	git push -u origin main
+
+
+*************************************************************************
+Como crear una branch antes del fichero
+	//Usa el siguiente comando en la terminal para crear y cambiar a una nueva rama
+	git checkout -b nombre_de_la_nueva_rama
+	
+	//Y verificar
+	git branch
+	
+	//Una vez hecho los cambios
+	git add .
+	git commit -m "Mensaje describiendo los cambios"
+	git push origin nombre_de_la_nueva_rama
+
+
+*************************************************************************
+Fusionar
+	//primero debo ir a la rama destino
+	git checkout main
+	
+	//Si se trabaja con repositorio remoto esta bien actualizarla para asegurarme que tengo la version mas actual
+	git pull origin main
+	
+	//Y fusiona con el nombre de la rama origen
+	git merge nombre_de_la_rama
+	
+	//Si hay problemas saldra un mensaje asi
+	<<<<<<< HEAD
+	cambios en la rama actual (main)
+	=======
+	cambios en la rama que estás fusionando
+	>>>>>>> nombre_de_la_rama
+	
+	//Después de resolver los conflictos, agrega los archivos al área de preparación 
+	git add archivo_afectado
+	
+	//Y completar la fusion con
+	git commit
+	
+	//Si estás trabajando con un repositorio remoto, sube la rama fusionada
+	git push origin main
+	
+	//Verifica
+	git log --oneline
+
+
+*************************************************************************
+Como puedo saber si estoy trabajando con un repositorio remoto
+	//Lista todo y saldra algo como el siguiente
+	git remote -v
+	
+	origin  https://github.com/usuario/nombre_del_repositorio.git (fetch)
+	origin  https://github.com/usuario/nombre_del_repositorio.git (push)
+		
+	//Comprobar conexion
+	git fetch
+	
+	//O tambien hacer un pull de los cambios mas rcientes
+	git pull origin main
+	

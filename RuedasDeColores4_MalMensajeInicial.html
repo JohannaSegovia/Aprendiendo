@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Preguntas</title>
+    <style>
+        /* Estilo para el cuadro modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            padding: 20px;
+            border: 1px solid #888;
+            text-align: center;
+        }
+
+        .modal-content input[type="color"] {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Responde las siguientes preguntas</h1>
+    
+    <!-- Botón para iniciar las preguntas -->
+    <button id="startButton">Comenzar</button>
+
+    <!-- Modal para la selección de color -->
+    <div id="colorModal" class="modal">
+        <div class="modal-content">
+            <h2>Selecciona un color</h2>
+            <input id="colorInput" type="color" value="#add8e6">
+            <br>
+            <button id="colorOkButton">OK</button>
+        </div>
+    </div>
+
+    <!-- Div para mostrar el resumen de las respuestas -->
+    <div id="summary" style="margin-top: 20px;"></div>
+
+    <script>
+        let userResponses = {};
+
+        document.getElementById('startButton').addEventListener('click', function() {
+            showColorModal();
+        });
+
+        function showColorModal() {
+            const colorModal = document.getElementById('colorModal');
+            colorModal.style.display = 'flex';
+
+            document.getElementById('colorOkButton').addEventListener('click', function() {
+                userResponses.color = document.getElementById('colorInput').value;
+                colorModal.style.display = 'none';
+                askForText();
+            }, { once: true }); // Este 'once: true' asegura que el evento solo se ejecute una vez.
+        }
+
+        function askForText() {
+            let textResponse = prompt("Ingresa un texto:");
+            if (textResponse !== null) {
+                userResponses.text = textResponse;
+                askForNumber();
+            } else {
+                alert("Por favor ingresa un texto.");
+                askForText();
+            }
+        }
+
+        function askForNumber() {
+            let numberResponse = prompt("Ingresa un número del 1 al 4:");
+            numberResponse = parseInt(numberResponse);
+            if (numberResponse >= 1 && numberResponse <= 4) {
+                userResponses.number = numberResponse;
+                showSummary();
+            } else {
+                alert("Por favor ingresa un número válido (1-4).");
+                askForNumber();
+            }
+        }
+
+        function showSummary() {
+            let summaryDiv = document.getElementById('summary');
+            summaryDiv.innerHTML = `
+                <h2>Resumen de Respuestas</h2>
+                <p><strong>Color seleccionado:</strong> <span style="color:${userResponses.color};">${userResponses.color}</span></p>
+                <p><strong>Texto ingresado:</strong> ${userResponses.text}</p>
+                <p><strong>Número ingresado:</strong> ${userResponses.number}</p>
+            `;
+        }
+    </script>
+</body>
+</html>

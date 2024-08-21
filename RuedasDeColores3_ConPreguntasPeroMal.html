@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Preguntas</title>
+</head>
+<body>
+    <h1>Responde las siguientes preguntas</h1>
+    
+    <!-- Botón para iniciar las preguntas -->
+    <button id="startButton">Comenzar</button>
+
+    <!-- Div para mostrar el resumen de las respuestas -->
+    <div id="summary" style="margin-top: 20px;"></div>
+
+    <script>
+        let userResponses = {};
+
+        document.getElementById('startButton').addEventListener('click', function() {
+            // Pregunta 1: Selección de color
+            let colorInput = document.createElement('input');
+            colorInput.type = 'color';
+            colorInput.value = '#add8e6';
+            colorInput.style.display = 'none'; // No mostrar el input
+
+            document.body.appendChild(colorInput);
+            colorInput.click();
+
+            colorInput.addEventListener('input', function() {
+                userResponses.color = colorInput.value;
+                document.body.removeChild(colorInput);
+                askForText(); // Pasar a la siguiente pregunta
+            });
+        });
+
+        function askForText() {
+            let textResponse = prompt("Ingresa un texto:");
+            if (textResponse !== null) {
+                userResponses.text = textResponse;
+                askForNumber(); // Pasar a la siguiente pregunta
+            } else {
+                alert("Por favor ingresa un texto.");
+                askForText(); // Volver a preguntar si no se ingresa texto
+            }
+        }
+
+        function askForNumber() {
+            let numberResponse = prompt("Ingresa un número del 1 al 4:");
+            numberResponse = parseInt(numberResponse);
+            if (numberResponse >= 1 && numberResponse <= 4) {
+                userResponses.number = numberResponse;
+                showSummary(); // Mostrar el resumen
+            } else {
+                alert("Por favor ingresa un número válido (1-4).");
+                askForNumber(); // Volver a preguntar si no se ingresa un número válido
+            }
+        }
+
+        function showSummary() {
+            let summaryDiv = document.getElementById('summary');
+            summaryDiv.innerHTML = `
+                <h2>Resumen de Respuestas</h2>
+                <p><strong>Color seleccionado:</strong> <span style="color:${userResponses.color};">${userResponses.color}</span></p>
+                <p><strong>Texto ingresado:</strong> ${userResponses.text}</p>
+                <p><strong>Número ingresado:</strong> ${userResponses.number}</p>
+            `;
+        }
+    </script>
+</body>
+</html>
