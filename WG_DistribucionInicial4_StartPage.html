@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layout Ejemplo</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .header {
+            background-color: #aec860;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .container {
+            display: none;
+            height: 100vh;
+            display: flex;
+            flex-direction: row;
+        }
+
+        .inicio {
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .botonera {
+            width: 200px;
+            background-color: #adcbb3;
+            padding: 10px;
+        }
+
+        .botonera .section-title {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .botonera .section-title img {
+            margin-left: 10px;
+            width: 12px;
+            height: 12px;
+        }
+
+        .botonera .submenu {
+            display: none;
+            margin-left: 20px;
+        }
+        .botonera .submenu button {
+            background-color: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            text-align: left;
+            padding: 5px 0;
+            font-size: 14px;
+            width: 100%;
+        }        
+
+        .content {
+            flex: 1;
+            padding: 10px;
+            display: flex;
+            align-items: flex-start; /* Asegura que el contenido esté alineado en la parte superior */
+        }
+
+        .hitos {
+            display: flex;
+            flex-direction: column;
+            width: 250px; /* Aumentamos el ancho de los hitos */
+            margin-right: -200px; /* Desplazamos los hitos para que se solapen con el calendario */
+            margin-top: 120px; /* Margen superior para bajar los hitos */
+            position: relative;
+            z-index: 1; /* Aseguramos que los hitos estén por encima del calendario */
+        }
+        
+        .hito {
+            background-color: #c0c0c0;
+            padding: 10px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .calendario {
+            flex: 1;
+            background-color: #ffffff;
+            padding: 10px;
+            border: 1px solid #ccc;
+            position: relative;
+            z-index: 0; /* Aseguramos que el calendario esté detrás de los hitos */
+        }
+
+        .form-container {
+            margin: 20px;
+        }
+
+        .form-container select,
+        .form-container input {
+            padding: 5px;
+            margin-right: 10px;
+        }
+
+        .inicio .btn {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .gantt-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .gantt-header .month {
+            text-align: center;
+            padding: 10px;
+            color: white;
+        }
+
+        .days {
+            display: flex;
+        }
+
+        .day {
+            width: 30px;
+            text-align: center;
+            padding: 5px;
+            margin: 1px;
+        }
+
+        .weekend {
+            background-color: #f2f2f2;
+        }
+
+        .today-line {
+            position: absolute;
+            height: 100%;
+            width: 2px;
+            background-color: red;
+            z-index: 2;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        HEADER
+    </div>
+
+    <!-- Pantalla de Inicio -->
+    <div class="inicio" id="inicio">
+        <h2>Bienvenido</h2>
+        <div class="form-container">
+            <form id="calendarForm">
+                <label for="mes">Selecciona el mes:</label>
+                <select id="mes">
+                    <option value="0">Enero</option>
+                    <option value="2">Marzo</option>
+                    <option value="4">Mayo</option>
+                    <option value="6">Julio</option>
+                    <option value="8">Septiembre</option>
+                    <option value="10">Noviembre</option>
+                </select>
+                <label for="ano">Año:</label>
+                <input type="number" id="ano" value="2024">
+                <button type="button" class="btn" onclick="mostrarFormulario()">Crear Nuevo</button>
+            </form>
+        </div>
+        <button class="btn" onclick="mostrarMensaje()">Upload</button>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div class="container" id="container">
+        <div class="botonera">
+            <!-- Seccion Configuracion -->
+            <div class="section-title" id="config-section">
+                Configuración
+                <img src="data:image/png;base64,..." alt="Arrow Icon" id="config-arrow-icon">
+            </div>
+            <div class="submenu" id="config-menu">
+                <button id="add-swimline">Añadir swimline</button>
+                <button id="modify-height">Modificar altura</button>
+                <button id="modify-text">Modificar texto</button>
+            </div>
+
+            <!-- Seccion Items -->
+            <div class="section-title" id="items-section">
+                Items
+                <img src="data:image/png;base64,..." alt="Arrow Icon" id="items-arrow-icon">
+            </div>
+            <div class="submenu" id="items-menu">
+                <button id="add-item">Añadir item</button>
+            </div>
+
+            <!-- Seccion Exportar -->
+            <div class="section-title" id="export-section">
+                Exportar
+                <img src="data:image/png;base64,..." alt="Arrow Icon" id="export-arrow-icon">
+            </div>
+            <div class="submenu" id="export-menu">
+                <button id="export-pdf">Exportar PDF</button>
+                <button id="save-changes">Guardar cambios</button>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="hitos">
+                <div class="hito">Hito1</div>
+                <div class="hito">Hito2</div>
+            </div>
+            <div class="calendario" id="calendario">
+                <!-- El calendario generado dinámicamente se mostrará aquí -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Función para mostrar la pantalla de creación de nuevo proyecto
+        function mostrarFormulario() {
+            document.getElementById('inicio').style.display = 'none';
+            document.getElementById('container').style.display = 'flex';
+
+            const month = parseInt(document.getElementById('mes').value) + 1;
+            const year = parseInt(document.getElementById('ano').value);
+            
+            const today = new Date();
+            
+            const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            
+            // Días por mes, considerando años bisiestos para febrero
+            function getDaysInMonth(month, year) {
+                return new Date(year, month, 0).getDate();
+            }
+            
+            const firstMonthDays = getDaysInMonth(month, year);
+            const secondMonthDays = getDaysInMonth(month + 1, year);
+            
+            const firstMonthName = monthNames[month - 1];
+            const secondMonthName = monthNames[month];
+            
+            const ganttContainer = document.getElementById('calendario');
+            ganttContainer.style.display = 'block';
+            
+            // Limpiar contenido previo
+            ganttContainer.innerHTML = '';
+            
+            // Crear header con los meses
+            const header = document.createElement('div');
+            header.className = 'gantt-header';
+            
+            const firstMonthDiv = document.createElement('div');
+            firstMonthDiv.className = 'month';
+            firstMonthDiv.style.width = `${32 * firstMonthDays}px`;
+            firstMonthDiv.style.backgroundColor = '#d3d3d3';
+            firstMonthDiv.textContent = `${firstMonthName} ${year}`;
+            
+            const secondMonthDiv = document.createElement('div');
+            secondMonthDiv.className = 'month';
+            secondMonthDiv.style.width = `${32 * secondMonthDays}px`;
+            secondMonthDiv.style.backgroundColor = '#a9a9a9';
+            secondMonthDiv.textContent = `${secondMonthName} ${year}`;
+            
+            header.appendChild(firstMonthDiv);
+            header.appendChild(secondMonthDiv);
+            ganttContainer.appendChild(header);
+            
+            // Crear días
+            const daysDiv = document.createElement('div');
+            daysDiv.className = 'days';
+            
+            let todayElement = null;
+            
+            for (let i = 1; i <= firstMonthDays; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'day';
+                dayDiv.id = `day-${year}-${month}-${i}`;  // Asignar un ID único a cada día
+                
+                const date = new Date(year, month - 1, i);
+                if (date.getDay() === 6 || date.getDay() === 0) { // 0 = Domingo, 6 = Sábado
+                    dayDiv.classList.add('weekend');
+                }
+                if (today.getFullYear() === year && today.getMonth() + 1 === month && today.getDate() === i) {
+                    todayElement = dayDiv;
+                }
+                dayDiv.textContent = i;
+                daysDiv.appendChild(dayDiv);
+            }
+            
+            for (let i = 1; i <= secondMonthDays; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'day';
+                dayDiv.id = `day-${year}-${month + 1}-${i}`;  // Asignar un ID único a cada día
+                
+                const date = new Date(year, month, i);
+                if (date.getDay() === 6 || date.getDay() === 0) { // 0 = Domingo, 6 = Sábado
+                    dayDiv.classList.add('weekend');
+                }
+                if (today.getFullYear() === year && today.getMonth() + 1 === month + 1 && today.getDate() === i) {
+                    todayElement = dayDiv;
+                }
+                dayDiv.textContent = i;
+                daysDiv.appendChild(dayDiv);
+            }
+            
+            ganttContainer.appendChild(daysDiv);
+            
+            // Si hoy corresponde a algún día mostrado, dibuja la línea
+            if (todayElement !== null) {
+                const rect = todayElement.getBoundingClientRect();
+                const containerRect = ganttContainer.getBoundingClientRect();
+                const todayLine = document.createElement('div');
+                todayLine.className = 'today-line';
+                todayLine.style.left = `${rect.left - containerRect.left}px`; // Posición relativa al contenedor
+                daysDiv.appendChild(todayLine);
+            }
+            
+            // Ejemplo de tareas
+            const ganttChart = document.createElement('div');
+            ganttChart.className = 'gantt-chart';
+            
+            ganttContainer.appendChild(ganttChart);
+            
+            // Mostrar el contenedor de acciones y ocultar el formulario
+            document.getElementById('container').style.display = 'flex';
+            document.getElementById('inicio').style.display = 'none';
+        }
+		
+		
+		
+		
+
+
+        // Función para mostrar el calendario en la sección "calendario"
+        function mostrarMensaje() {
+			document.getElementById('inicio').innerHTML = '<h2>In progress</h2>';
+		}
+		
+		
+		
+		
+		
+
+        // Función para alternar submenús
+        function toggleMenu(sectionId, menuId, arrowIconId) {
+            const menu = document.getElementById(menuId);
+            const arrowIcon = document.getElementById(arrowIconId);
+            if (menu.style.display === 'none' || menu.style.display === '') {
+                menu.style.display = 'block';
+                arrowIcon.style.transform = 'rotate(180deg)';
+            } else {
+                menu.style.display = 'none';
+                arrowIcon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Configuración de los toggles
+        document.getElementById('config-section').addEventListener('click', function() {
+            toggleMenu('config-section', 'config-menu', 'config-arrow-icon');
+        });
+        document.getElementById('items-section').addEventListener('click', function() {
+            toggleMenu('items-section', 'items-menu', 'items-arrow-icon');
+        });
+        document.getElementById('export-section').addEventListener('click', function() {
+            toggleMenu('export-section', 'export-menu', 'export-arrow-icon');
+        });
+
+        // Mensajes de alerta para los botones
+        document.getElementById('add-swimline').addEventListener('click', function() {
+            alert('Añadir swimline');
+        });
+
+        document.getElementById('modify-height').addEventListener('click', function() {
+            alert('In progress');
+        });
+        document.getElementById('modify-text').addEventListener('click', function() {
+            alert('In progress');
+        });
+
+        document.getElementById('add-item').addEventListener('click', function() {
+            alert('In progress');
+        });
+
+        document.getElementById('export-pdf').addEventListener('click', function() {
+            alert('In progress');
+        });
+        document.getElementById('save-changes').addEventListener('click', function() {
+            alert('In progress');
+        });
+    </script>
+</body>
+</html>
