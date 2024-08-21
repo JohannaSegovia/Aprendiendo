@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabla de Agosto y Septiembre</title>
+    <style>
+        table {
+            width: auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            border-left: 1px solid rgb(212, 212, 212);
+            border-right: 1px solid rgb(212, 212, 212);
+            text-align: center;
+            width: 30px;
+            height: 30px;
+        }
+        th {
+            background-color: lightgreen;
+        }
+        th[colspan="30"] {
+            background-color: lightyellow;
+        }
+        .item-column {
+            background-color: peachpuff;
+            width: 100px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+<table id="calendar-table"></table>
+
+<script>
+    function createCalendarTable() {
+        const table = document.getElementById('calendar-table');
+        
+        // Crear encabezado de la tabla
+        const headerRow1 = document.createElement('tr');
+        headerRow1.innerHTML = `<th></th>
+            <th colspan="31" style="background-color: lightgreen;">Agosto</th>
+            <th colspan="30" style="background-color: lightyellow;">Septiembre</th>`;
+        table.appendChild(headerRow1);
+        
+        const headerRow2 = document.createElement('tr');
+        headerRow2.innerHTML = `<th></th>
+            ${Array.from({ length: 31 }, (_, i) => `<th>${i + 1}</th>`).join('')}
+            ${Array.from({ length: 30 }, (_, i) => `<th>${i + 1}</th>`).join('')}`;
+        table.appendChild(headerRow2);
+        
+        // Crear filas de la tabla
+        const items = ['Item 1', 'Item 2', 'Item 3'];
+        items.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td class="item-column">${item}</td>
+                ${Array(61).fill('<td></td>').join('')}`;
+            table.appendChild(row);
+        });
+    }
+
+    // Crear la tabla cuando se carga la página
+    window.onload = createCalendarTable;
+</script>
+
+</body>
+</html>
