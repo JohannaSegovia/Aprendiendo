@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario de Gantt</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: center;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .gantt-bar {
+            background-color: #76c7c0;
+            height: 20px;
+            display: inline-block;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Calendario de Gantt</h2>
+<table>
+    <thead>
+        <tr id="month-row"></tr>
+        <tr id="day-row"></tr>
+    </thead>
+    <tbody>
+        <!-- Aquí puedes agregar las tareas con las barras de Gantt -->
+        <tr>
+            <td>Tarea 1</td>
+            <td colspan="10"></td> <!-- Barra de Gantt vacía -->
+            <td colspan="10"><div class="gantt-bar"></div></td> <!-- Barra de Gantt -->
+            <td colspan="40"></td>
+        </tr>
+        <tr>
+            <td>Tarea 2</td>
+            <td colspan="20"></td>
+            <td colspan="15"><div class="gantt-bar"></div></td>
+            <td colspan="25"></td>
+        </tr>
+    </tbody>
+</table>
+
+<script>
+    const today = new Date();
+    const startMonth = today.getMonth(); // Mes actual
+    const year = today.getFullYear();
+
+    const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
+    function daysInMonth(month, year) {
+        return new Date(year, month + 1, 0).getDate();
+    }
+
+    const monthRow = document.getElementById('month-row');
+    const dayRow = document.getElementById('day-row');
+
+    // Generar filas para dos meses
+    for (let i = 0; i < 2; i++) {
+        const currentMonth = (startMonth + i) % 12;
+        const days = daysInMonth(currentMonth, year);
+
+        const monthHeader = document.createElement('th');
+        monthHeader.colSpan = days;
+        monthHeader.innerText = `${monthNames[currentMonth]} ${year}`;
+        monthRow.appendChild(monthHeader);
+
+        for (let d = 1; d <= days; d++) {
+            const dayCell = document.createElement('td');
+            dayCell.innerText = d;
+            dayRow.appendChild(dayCell);
+        }
+    }
+</script>
+
+</body>
+</html>

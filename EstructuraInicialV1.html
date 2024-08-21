@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distribucion</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+
+        }
+
+        .header {
+            background-color: #aec860;
+            padding: 10px;
+            text-align: center; /* El texto se alinea en el centro de ese contenedor */
+            /*display: none; /* Ocultar el header por defecto */
+        }
+
+        .debajoHeader {
+            background-color: #6db9ec;
+            display: flex;
+            flex-direction: row;
+            /*height: 100vh;
+            /*display: none;*/
+        }
+
+        .botonera {
+            background-color: #95ec6d;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .areaPrincipal {
+            background-color:#eccc6d;
+        }
+
+        .botonera .seccionTituloBotonera {
+            background-color:#cd6cd2;
+            /*margin-bottom: 10px;*/
+            cursor: pointer;
+        }
+
+        .selectBox {
+            font-size: 14px;
+        }
+
+        .botonera .submenu {
+            display: flex;
+            flex-direction: column;
+            padding-left: 15px;
+        }
+
+        .botonera .submenu button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            padding: 0px 0px;
+        }
+
+        .areaSwims {
+            background-color: transparent;
+        }
+
+        .areacalndario{
+            background-color: transparent;
+        }
+
+
+
+
+
+
+
+        .botoneras .section-title {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .botoneras .submenu button {
+            background-color: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            text-align: left;
+            padding: 5px 0;
+            font-size: 14px;
+            width: 100%;
+        } 
+
+    </style>
+</head>
+<body>
+    <div class="header">
+        Header
+    </div>
+    <div class="debajoHeader">
+        <div class="botonera">
+            <div class="seccionTituloBotonera">
+                Configuración
+            </div>
+            <div class="selectBox">
+                <input type="checkbox" name="opcion1" value="valor1">
+                Enable changes
+            </div>
+            <div class="submenu">
+                <button id="add-swimline">Añadir swimline</button>
+                <button id="modify-height">Modificar altura</button>
+                <button id="modify-text">Modificar texto</button>
+            </div>
+            <div class="seccionTituloBotonera">
+                Otras opciones
+            </div>
+            <div class="submenu">
+                <button id="add-swimline">Boton 1</button>
+                <button id="modify-height">Boton 2</button>
+                <button id="modify-text">Boton 3</button>
+            </div>
+            <div class="seccionTituloBotonera">
+                Exportar
+            </div>
+            <div class="submenu">
+                <button id="add-swimline">Boton 1</button>
+                <button id="modify-height">Boton 2</button>
+                <button id="modify-text">Boton 3</button>
+            </div>
+        </div>
+        <div class="areaPrincipal">
+            
+            <button id="add-item">Boton Tres</button>
+            <button id="add-item">Boton Cuatro</button>
+        </div>
+        
+    </div>
+
+
+
+</body>
+</html>

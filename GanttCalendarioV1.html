@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagrama de Gantt Autocontenido</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .gantt {
+            display: grid;
+            grid-template-columns: 150px repeat(31, 20px);
+            grid-gap: 1px;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+        }
+        .gantt div {
+            background-color: #f5f5f5;
+            padding: 5px;
+            text-align: center;
+        }
+        .task {
+            background-color: #76c7c0;
+            color: white;
+            text-align: center;
+        }
+        .task.dependency {
+            background-color: #FFAA00;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Diagrama de Gantt Autocontenido</h1>
+
+    <div id="gantt" class="gantt">
+        <!-- Columnas de las fechas -->
+        <div>Tarea</div>
+        <div>01</div>
+        <div>02</div>
+        <div>03</div>
+        <div>04</div>
+        <div>05</div>
+        <div>06</div>
+        <div>07</div>
+        <div>08</div>
+        <div>09</div>
+        <div>10</div>
+        <div>11</div>
+        <div>12</div>
+        <div>13</div>
+        <div>14</div>
+        <div>15</div>
+        <div>16</div>
+        <div>17</div>
+        <div>18</div>
+        <div>19</div>
+        <div>20</div>
+        <div>21</div>
+        <div>22</div>
+        <div>23</div>
+        <div>24</div>
+        <div>25</div>
+        <div>26</div>
+        <div>27</div>
+        <div>28</div>
+        <div>29</div>
+        <div>30</div>
+        <div>31</div>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <h2>Añadir Tarea</h2>
+        <label for="taskName">Nombre de la Tarea:</label>
+        <input type="text" id="taskName" required>
+        <label for="startDate">Fecha de Inicio (dd):</label>
+        <input type="number" id="startDate" min="1" max="31" required>
+        <label for="duration">Duración (días):</label>
+        <input type="number" id="duration" min="1" required>
+        <label for="dependency">Dependencia (nombre de tarea):</label>
+        <input type="text" id="dependency">
+        <button onclick="addTask()">Añadir Tarea</button>
+    </div>
+
+    <script>
+        function addTask() {
+            const taskName = document.getElementById('taskName').value;
+            const startDate = parseInt(document.getElementById('startDate').value);
+            const duration = parseInt(document.getElementById('duration').value);
+            const dependency = document.getElementById('dependency').value.trim();
+
+            if (!taskName || !startDate || !duration || startDate < 1 || startDate > 31) {
+                alert("Por favor, introduce valores válidos.");
+                return;
+            }
+
+            const gantt = document.getElementById('gantt');
+
+            // Verificar si existe una tarea con dependencia
+            let dependencyOffset = 0;
+            if (dependency) {
+                const dependencyTask = Array.from(gantt.children).find(div => div.textContent === dependency);
+                if (dependencyTask) {
+                    const startCell = dependencyTask.nextElementSibling;
+                    const endCell = startCell.nextElementSibling;
+                    dependencyOffset = Array.from(gantt.children).indexOf(endCell) - 1;
+                } else {
+                    alert("No se encontró la tarea de dependencia.");
+                    return;
+                }
+            }
+
+            // Crear fila de tarea
+            const taskRow = document.createElement('div');
+            taskRow.textContent = taskName;
+            gantt.appendChild(taskRow);
+
+            // Crear columnas vacías hasta el inicio de la tarea
+            for (let i = 1; i < startDate + dependencyOffset; i++) {
+                const emptyCell = document.createElement('div');
+                gantt.appendChild(emptyCell);
+            }
+
+            // Crear las celdas de la tarea
+            for (let i = 0; i < duration; i++) {
+                const taskCell = document.createElement('div');
+                taskCell.className = 'task';
+                if (dependency) {
+                    taskCell.classList.add('dependency');
+                }
+                taskCell.textContent = taskName;
+                gantt.appendChild(taskCell);
+            }
+
+            // Crear celdas vacías hasta el final del mes
+            for (let i = startDate + duration + dependencyOffset; i <= 31; i++) {
+                const emptyCell = document.createElement('div');
+                gantt.appendChild(emptyCell);
+            }
+
+            // Limpiar campos de entrada
+            document.getElementById('taskName').value = '';
+            document.getElementById('startDate').value = '';
+            document.getElementById('duration').value = '';
+            document.getElementById('dependency').value = '';
+        }
+    </script>
+
+</body>
+</html>
