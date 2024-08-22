@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEOCRM Release Plan</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .cabecera {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            align-items: flex-start; /* Si tienes un contenedor flex con varios elementos hijos de diferentes alturas, align-items: flex-start; asegurará que todos esos elementos comiencen desde la parte superior del contenedor.*/
+        }
+        .cabecera-left {
+            display: flex;
+            flex-direction: column;
+        }
+        .tituloReleasePlan {
+            font-size: 20px;
+            padding-bottom: 15px;
+        }
+        .detallesReleasePlan {
+            font-size: 14px;
+        }
+        .detallesReleasePlan-grid {
+            display: grid;
+            grid-template-columns: repeat(3, auto);
+            gap: 20px;
+        }
+        .cabecera-right {
+            display: flex;
+            flex-direction: row;
+        }
+        .keyTitulo{
+            margin-right: 20px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .key-container {
+            display: grid;
+            grid-template-columns: repeat(3, auto);
+            gap: 10px;
+        }
+        .key-item {
+            display: flex;
+            align-items: center;
+            /*margin-right: 20px;*/
+            /*margin-bottom: 10px;*/
+        }
+
+        /* ***************** DEBAJO DEL HEADER ***************** */
+        .debajoCabecera {
+            background-color: #6db9ec;
+            display: flex;
+            flex-direction: row;
+            /*height: 100vh;
+            /*display: none;*/
+        }
+        .botonera {
+            width: 160px; /* Ancho fijo */
+            background-color: #1637bb;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            border-radius: 10px;
+            color: white;
+            
+        }
+        .botonera_seccionTitulo {
+            /*background-color:#cd6cd2;*/
+            /*margin-bottom: 10px;*/
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .botonera_seccionTitulo img {
+            margin-left: 10px;
+            width: 12px;
+            height: 12px;
+        }
+        .selectBox {
+            font-size: 14px;
+        }
+        .botonera_submenu {
+            /*display: none;*/ /*Cuando cargue la pagina por primera vez esto tiene que quedar oculto pero por ahora lo dejamos abierto*/
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+        .botonera_submenu button {
+            background-color: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            text-align: left;
+            padding: 5px 0;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        
+
+
+
+
+
+
+
+
+
+
+        
+        .color-box {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+        }
+        .release { background-color: #4CAF50; } /* Verde */
+        .governance { background-color: #D32F2F; } /* Rojo */
+        .complete { background-color: #303F9F; } /* Azul oscuro */
+        .sprint { background-color: #00BCD4; } /* Turquesa */
+        .obsolescence { background-color: #8D6E63; } /* Marrón */
+        .weekend { border: 1px solid #555; background-color: transparent; } /* Líneas para fin de semana */
+        .freeze { background-color: #EEEEEE; } /* Gris claro */
+        [contenteditable="true"] {
+            border: 1px dashed #ccc;
+            padding: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="cabecera">
+        <div class="cabecera-left">
+            <div class="tituloReleasePlan">
+                <strong contenteditable="true">NEOCRM Release Plan</strong>
+            </div>
+            <div class="detallesReleasePlan">
+                <div class="detallesReleasePlan-grid">
+                    <div>Change Manager: <span contenteditable="true">Craig Black</span></div>
+                    <div>Product Owner: <span contenteditable="true">Sophie Harper</span></div>
+                    <div>Updated: <span contenteditable="true">16/08/2024</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="cabecera-right">
+            <div class="keyTitulo">Key</div>
+            <div class="key-container">
+                <div class="key-item">
+                    <div class="color-box release"></div>Release (Milestone on track)
+                </div>
+                <div class="key-item">
+                    <div class="color-box sprint"></div>Sprint
+                </div>
+                <div class="key-item">
+                    <div class="color-box governance"></div>Weekend & BH
+                </div>
+                <div class="key-item">
+                    <div class="color-box governance"></div>IT Governance
+                </div>
+                <div class="key-item">
+                    <div class="color-box obsolescence"></div>Obsolescence
+                </div>
+                <div class="key-item">
+                    <div class="color-box obsolescence"></div>Change freeze
+                </div>
+                <div class="key-item">
+                    <div class="color-box complete"></div>Milestone Complete
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="debajoCabecera">
+        <div class="botonera">
+            <div class="botonera_seccionTitulo" id="config-section">Configuration<!--<img src="data:image/png;base64,..." alt="Arrow Icon" id="config-arrow-icon">--></div>
+            <div class="selectBox">
+                <input type="checkbox" name="opcion1" value="valor1">Enable changes
+            </div>
+            <div class="botonera_submenu">
+                <button id="add-swimline">Añadir swimline</button>
+                <button id="modify-height">Modificar altura</button>
+                <button id="modify-text">Modificar texto</button>
+            </div>
+
+            <div class="botonera_seccionTitulo" id="hitos-section">Hitos<!--<img src="data:image/png;base64,..." alt="Arrow Icon" id="config-arrow-icon">--></div>
+            <div class="botonera_submenu">
+                <button id="agregarHito">Agregar Hito</button>
+                <button id="agregarDesc">Agregar Descripcion</button>
+            </div>
+
+            <div class="botonera_seccionTitulo" id="export-section">Exportar/Importar<!--<img src="data:image/png;base64,..." alt="Arrow Icon" id="config-arrow-icon">--></div>
+            <div class="botonera_submenu">
+                <button id="export-pdf">Exportar PDF</button>
+                <button id="save-changes">Guardar cambios</button>
+                <button id="save-changes">Importar ficheros</button>
+            </div>
+        </div>
+        <div class="areaPrincipal"></div>
+    </div>
+
+
+
+
+
+
+
+
+
+</body>
+</html>
