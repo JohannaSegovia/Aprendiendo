@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuadrado y Triángulo Movibles</title>
+    <style>
+        #square {
+            width: 100px;
+            height: 100px;
+            background-color: green;
+            position: absolute;
+            cursor: pointer;
+        }
+
+        #triangle {
+            width: 0;
+            height: 0;
+            border-left: 50px solid transparent;
+            border-right: 50px solid transparent;
+            border-bottom: 100px solid red;
+            position: absolute;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div id="square"></div>
+<div id="triangle"></div>
+
+<button id="save-btn">Guardar Posiciones en CSV</button>
+<input type="file" id="file-input" accept=".csv" />
+
+<script>
+    const square = document.getElementById('square');
+    const triangle = document.getElementById('triangle');
+    const saveBtn = document.getElementById('save-btn');
+    const fileInput = document.getElementById('file-input');
+
+    // Función para obtener la posición desde un objeto
+    function getPositionFromObject(obj) {
+        return obj ? [parseInt(obj.left), parseInt(obj.top)] : [0, 0];
+    }
+
+    // Función para guardar las posiciones en un archivo CSV
+    function savePositionsToCSV() {
+        const squarePosition = { id: 'square', left: square.style.left, top: square.style.top };
+        const trianglePosition = { id: 'triangle', left: triangle.style.left, top: triangle.style.top };
+
+        const csvContent = `id,left,top\n${squarePosition.id},${squarePosition.left},${squarePosition.top}\n${trianglePosition.id},${trianglePosition.left},${trianglePosition.top}`;
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'positions.csv');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // Función para cargar las posiciones desde un archivo CSV
+    function loadPositionsFromCSV(csvContent) {
+        const lines = csvContent.split('\n');
+        lines.slice(1).forEach(line => {
+            const [id, left, top] = line.split(',');
+            const element = document.getElementById(id);
+            if (element) {
+                element.style.left = left;
+                element.style.top = top;
+            }
+        });
+    }
+
+    // Función para hacer los elementos arrastrables
+    function makeDraggable(element) {
+        let offsetX, offsetY;
+
+        element.onmousedown = function(e) {
+            e.preventDefault();
+            offsetX = e.clientX - element.getBoundingClientRect().left;
+            offsetY = e.clientY - element.getBoundingClientRect().top;
+
+            document.onmousemove = function(e) {
+                element.style.left = `${e.clientX - offsetX}px`;
+                element.style.top = `${e.clientY - offsetY}px`;
+            }
+
+            document.onmouseup = function() {
+                document.onmousemove = null;
+                document.onmouseup = null;
+            }
+        };
+    }
+
+    // Event listener para guardar posiciones en CSV
+    saveBtn.addEventListener('click', savePositionsToCSV);
+
+    // Event listener para cargar posiciones desde CSV
+    fileInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                loadPositionsFromCSV(e.target.result);
+            };
+            reader.readAsText(file);
+        }
+    });
+
+    // Inicializar las posiciones
+    const defaultSquarePosition = getPositionFromObject({ left: '0px', top: '0px' });
+    const defaultTrianglePosition = getPositionFromObject({ left: '150px', top: '150px' });
+
+    square.style.left = `${defaultSquarePosition[0]}px`;
+    square.style.top = `${defaultSquarePosition[1]}px`;
+
+    triangle.style.left = `${defaultTrianglePosition[0]}px`;
+    triangle.style.top = `${defaultTrianglePosition[1]}px`;
+
+    // Hacer los elementos arrastrables
+    makeDraggable(square);
+    makeDraggable(triangle);
+</script>
+
+</body>
+</html>

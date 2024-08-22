@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Cuadrados con Redimensión y Movimiento Controlado</title>
+    <style>
+        .square {
+            width: 100px;
+            height: 100px;
+            background-color: green;
+            position: absolute;
+            cursor: pointer;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        .square .resize-handle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: blue;
+            cursor: nwse-resize;
+            display: none; /* Ocultar por defecto */
+        }
+
+        .square .resize-handle.bottom-right {
+            right: 0;
+            bottom: 0;
+        }
+
+        .square.editable .resize-handle {
+            display: block; /* Mostrar solo en modo edición */
+        }
+
+        #container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            border: 1px solid #ccc;
+        }
+
+        #controls {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="controls">
+    <button id="add-square-btn">Agregar Cuadrado</button>
+    <button id="modify-btn">Modificar</button>
+    <button id="save-btn" class="hidden">Guardar Cambios</button>
+    <button id="save-csv-btn">Guardar Posiciones en CSV</button>
+    <input type="file" id="file-input" accept=".csv" />
+</div>
+
+<div id="container"></div>
+
+<script>
+    const container = document.getElementById('container');
+    const addSquareBtn = document.getElementById('add-square-btn');
+    const modifyBtn = document.getElementById('modify-btn');
+    const saveBtn = document.getElementById('save-btn');
+    const saveCsvBtn = document.getElementById('save-csv-btn');
+    const fileInput = document.getElementById('file-input');
+
+    let isEditMode = false;
+    let selectedSquare = null;
+
+    // Función para activar el modo de modificación
+    function toggleEditMode() {
+        isEditMode = !isEditMode;
+        modifyBtn.classList.toggle('hidden', isEditMode);
+        saveBtn.classList.toggle('hidden', !isEditMode);
+        
+        const squares = document.querySelectorAll('.square');
+        squares.forEach(square => {
+            square.classList.toggle('editable', isEditMode);
+            if (!isEditMode) {
+                square.onmousedown = null;
+                square.querySelector('.resize-handle').onmousedown = null;
+            } else {
+                makeDraggable(square);
+                makeResizable(square, square.querySelector('.resize-handle'));
+            }
+        });
+    }
+
+    // Función para agregar un nuevo cuadrado
+    function addSquare(left = '0px', top = '0px', width = '100px', height = '100px') {
+        const square = document.createElement('div');
+        square.className = 'square';
+        square.style.left = left;
+        square.style.top = top;
+        square.style.width = width;
+        square.style.height = height;
+
+        const resizeHandle = document.createElement('div');
+        resizeHandle.className = 'resize-handle bottom-right';
+        square.appendChild(resizeHandle);
+
+        container.appendChild(square);
+
+        square.addEventListener('click', function() {
+            selectSquare(square);
+        });
+
+        if (isEditMode) {
+            makeDraggable(square);
+            makeResizable(square, resizeHandle);
+        }
+    }
+
+    // Función para seleccionar un cuadrado
+    function selectSquare(square) {
+        if (selectedSquare) {
+            selectedSquare.style.border = 'none';
+        }
+        selectedSquare = square;
+        selectedSquare.style.border = '2px solid red';
+    }
+
+    // Función para hacer el cuadrado arrastrable
+    function makeDraggable(element) {
+        let offsetX, offsetY;
+
+        element.onmousedown = function(e) {
+            if (e.target.classList.contains('resize-handle')) return; // Evitar mover si está redimensionando
+
+            e.preventDefault();
+            offsetX = e.clientX - element.getBoundingClientRect().left;
+            offsetY = e.clientY - element.getBoundingClientRect().top;
+
+            document.onmousemove = function(e) {
+                element.style.left = `${e.clientX - offsetX}px`;
+                element.style.top = `${e.clientY - offsetY}px`;
+            }
+
+            document.onmouseup = function() {
+                document.onmousemove = null;
+                document.onmouseup = null;
+            }
+        };
+    }
+
+    // Función para hacer el cuadrado redimensionable
+    function makeResizable(element, handle) {
+        let startX, startY, startWidth, startHeight;
+
+        handle.onmousedown = function(e) {
+            e.preventDefault();
+            startX = e.clientX;
+            startY = e.clientY;
+            startWidth = parseInt(document.defaultView.getComputedStyle(element).width, 10);
+            startHeight = parseInt(document.defaultView.getComputedStyle(element).height, 10);
+
+            document.onmousemove = function(e) {
+                element.style.width = `${startWidth + e.clientX - startX}px`;
+                element.style.height = `${startHeight + e.clientY - startY}px`;
+            }
+
+            document.onmouseup = function() {
+                document.onmousemove = null;
+                document.onmouseup = null;
+            }
+        };
+    }
+
+    // Función para guardar las posiciones en un archivo CSV
+    function savePositionsToCSV() {
+        const squares = document.querySelectorAll('.square');
+        let csvContent = 'id,width,height,top,left\n';
+
+        squares.forEach((square, index) => {
+            csvContent += `square${index + 1},${square.style.width},${square.style.height},${square.style.top},${square.style.left}\n`;
+        });
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'positions.csv');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // Función para cargar las posiciones desde un archivo CSV
+    function loadPositionsFromCSV(csvContent) {
+        const lines = csvContent.split('\n');
+        lines.slice(1).forEach(line => {
+            const [id, width, height, top, left] = line.split(',');
+            if (id) {
+                addSquare(left, top, width, height);
+            }
+        });
+    }
+
+    // Event listeners
+    addSquareBtn.addEventListener('click', addSquare);
+    modifyBtn.addEventListener('click', toggleEditMode);
+    saveBtn.addEventListener('click', toggleEditMode);
+    saveCsvBtn.addEventListener('click', savePositionsToCSV);
+
+    fileInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                loadPositionsFromCSV(e.target.result);
+            };
+            reader.readAsText(file);
+        }
+    });
+</script>
+
+</body>
+</html>

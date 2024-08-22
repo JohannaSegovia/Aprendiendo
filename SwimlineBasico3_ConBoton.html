@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Añadir Grupos de Elementos con Drag Vertical y Altura Dinámica</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: left;
+            align-items: center;
+            justify-content: flex-start;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .contenedor {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-top: 20px;
+            cursor: grab;
+            position: absolute;
+        }
+
+        .rectangulo {
+            width: 50px;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .texto-vertical {
+            position: absolute;
+            writing-mode: vertical-rl;
+            transform: translate(-50%, -50%) rotate(180deg);
+            top: 50%;
+            left: 50%;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .barra {
+            width: 1000px;
+            height: 1px;
+            background-color: #808080;
+            margin-top: 0px;
+        }
+    </style>
+</head>
+<body>
+
+    <button id="addButton">Añadir</button>
+
+    <div id="contenedor-principal">
+        <!-- Aquí se añadirán los nuevos grupos de elementos -->
+    </div>
+
+    <script>
+        document.getElementById('addButton').addEventListener('click', function() {
+            // Preguntar por el color
+            let color = prompt("Elige un color para el rectángulo (en formato hexadecimal o usa la rueda de colores):", "#add8e6");
+
+            // Preguntar por el texto
+            let texto = prompt("Introduce el texto para el rectángulo:", "Texto");
+
+            // Preguntar por el número de líneas
+            let lineas = parseInt(prompt("¿Cuántas líneas de texto (1, 2 o 3)?", "1"));
+
+            // Calcular la altura del rectángulo basado en el número de líneas
+            let alturaRectangulo;
+            switch (lineas) {
+                case 1:
+                    alturaRectangulo = 100;
+                    break;
+                case 2:
+                    alturaRectangulo = 250;
+                    break;
+                case 3:
+                    alturaRectangulo = 400;
+                    break;
+                default:
+                    alturaRectangulo = 100; // Valor por defecto si la entrada no es válida
+            }
+
+            // Crear el contenedor del grupo
+            let contenedor = document.createElement('div');
+            contenedor.className = 'contenedor';
+
+            // Calcular la posición vertical más baja de todos los elementos existentes
+            let contenedorPrincipal = document.getElementById('contenedor-principal');
+            let nuevaPosicionTop = Array.from(contenedorPrincipal.children).reduce((maxTop, child) => {
+                const childTop = child.offsetTop + child.offsetHeight;
+                return Math.max(maxTop, childTop);
+            }, 0);
+
+            // Añadir un pequeño margen entre el último elemento y el nuevo
+            nuevaPosicionTop += 1;
+
+            contenedor.style.top = `${nuevaPosicionTop}px`;
+
+            // Crear el rectángulo
+            let rectangulo = document.createElement('div');
+            rectangulo.className = 'rectangulo';
+            rectangulo.style.backgroundColor = color;
+            rectangulo.style.height = `${alturaRectangulo}px`;
+
+            // Crear el texto vertical
+            let textoVertical = document.createElement('div');
+            textoVertical.className = 'texto-vertical';
+            textoVertical.textContent = texto;
+
+            // Añadir el texto dentro del rectángulo
+            rectangulo.appendChild(textoVertical);
+
+            // Crear la barra
+            let barra = document.createElement('div');
+            barra.className = 'barra';
+
+            // Añadir el rectángulo y la barra al contenedor
+            contenedor.appendChild(rectangulo);
+            contenedor.appendChild(barra);
+
+            // Añadir el contenedor al contenedor principal
+            contenedorPrincipal.appendChild(contenedor);
+
+            // Añadir funcionalidad de drag
+            agregarDragVertical(contenedor);
+        });
+
+        function agregarDragVertical(elemento) {
+            let offsetY = 0;
+            let startY = 0;
+            let isDragging = false;
+
+            elemento.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                startY = elemento.getBoundingClientRect().top;
+                offsetY = e.clientY - startY;
+                elemento.style.cursor = 'grabbing';
+                elemento.style.zIndex = 1000;  // Traer el elemento al frente
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (isDragging) {
+                    let newY = e.clientY - offsetY;
+                    elemento.style.top = `${newY}px`;
+                }
+            });
+
+            document.addEventListener('mouseup', function() {
+                isDragging = false;
+                elemento.style.cursor = 'grab';
+                elemento.style.zIndex = '';  // Restablecer el z-index
+            });
+
+            // Evitar selección de texto mientras se arrastra
+            elemento.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+            });
+        }
+
+        // Inicializar el primer contenedor si es necesario
+        agregarDragVertical(document.querySelector('.contenedor'));
+    </script>
+
+</body>
+</html>

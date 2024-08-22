@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag and Drop Vertical</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: left;
+            align-items: flex-start;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden; /* Para evitar el scroll al arrastrar */
+        }
+
+        .contenedor {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            cursor: grab;
+            position: relative;
+            top: 0;
+        }
+
+        .rectangulo {
+            width: 50px;
+            height: 200px;
+            background-color: #add8e6;
+            border-radius: 10px;
+            position: relative;
+        }
+
+		.texto-vertical {
+			position: absolute;
+			writing-mode: vertical-rl;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%) rotate(180deg); /* Combina las transformaciones en una sola línea */
+			font-size: 16px;
+			text-align: center;
+		}
+
+        .barra {
+            width: 300px;
+            height: 2px;
+            background-color: #808080;
+            margin-top: 0px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="contenedor" id="draggable">
+        <div class="rectangulo">
+            <div class="texto-vertical">Texto</div>
+        </div>
+        <div class="barra"></div>
+    </div>
+
+    <script>
+        const draggable = document.getElementById('draggable');
+        let offsetY = 0;
+        let isDragging = false;
+
+        draggable.addEventListener('mousedown', function(e) {
+            isDragging = true;
+            offsetY = e.clientY - draggable.getBoundingClientRect().top;
+            draggable.style.cursor = 'grabbing';
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (isDragging) {
+                let newY = e.clientY - offsetY;
+                draggable.style.top = `${newY}px`;
+            }
+        });
+
+        document.addEventListener('mouseup', function() {
+            isDragging = false;
+            draggable.style.cursor = 'grab';
+        });
+
+        // Evitar selección de texto mientras se arrastra
+        draggable.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+        });
+    </script>
+
+</body>
+</html>

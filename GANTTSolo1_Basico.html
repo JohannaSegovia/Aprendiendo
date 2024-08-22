@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagrama de Gantt</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .gantt-container {
+            width: 100%;
+            overflow-x: scroll;
+            border: 1px solid #ccc;
+            padding: 10px;
+            position: relative;
+        }
+        .gantt-header {
+            display: flex;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            width: max-content;
+        }
+        .month {
+            text-align: center;
+            font-weight: bold;
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .month-julio {
+            background-color: #d3d3d3;
+            width: 930px;
+        }
+        .month-agosto {
+            background-color: #a9a9a9;
+            width: 961px;
+        }
+        .days {
+            display: flex;
+            width: max-content;
+            margin-top: 15px; /* Para dar espacio a los nombres de los meses */
+        }
+        .day {
+            width: 31px;
+            text-align: center;
+            border: 1px solid #ddd;
+            flex-shrink: 0;
+        }
+        .gantt-chart {
+            display: flex;
+            margin-top: 10px;
+            width: max-content;
+        }
+        .task {
+            height: 30px;
+            background-color: #6c757d;
+            margin-right: 2px;
+            text-align: center;
+            color: white;
+            line-height: 30px;
+            border-radius: 5px;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="gantt-container">
+    <!-- Header con los meses -->
+    <div class="gantt-header">
+        <div class="month month-julio">Julio</div>
+        <div class="month month-agosto">Agosto</div>
+    </div>
+
+    <!-- Días de Julio y Agosto -->
+    <div class="days">
+        <!-- Julio -->
+        <div class="day">1</div>
+        <div class="day">2</div>
+        <div class="day">3</div>
+        <div class="day">4</div>
+        <div class="day">5</div>
+        <div class="day">6</div>
+        <div class="day">7</div>
+        <div class="day">8</div>
+        <div class="day">9</div>
+        <div class="day">10</div>
+        <div class="day">11</div>
+        <div class="day">12</div>
+        <div class="day">13</div>
+        <div class="day">14</div>
+        <div class="day">15</div>
+        <div class="day">16</div>
+        <div class="day">17</div>
+        <div class="day">18</div>
+        <div class="day">19</div>
+        <div class="day">20</div>
+        <div class="day">21</div>
+        <div class="day">22</div>
+        <div class="day">23</div>
+        <div class="day">24</div>
+        <div class="day">25</div>
+        <div class="day">26</div>
+        <div class="day">27</div>
+        <div class="day">28</div>
+        <div class="day">29</div>
+        <div class="day">30</div>
+        <!-- Agosto -->
+        <div class="day">1</div>
+        <div class="day">2</div>
+        <div class="day">3</div>
+        <div class="day">4</div>
+        <div class="day">5</div>
+        <div class="day">6</div>
+        <div class="day">7</div>
+        <div class="day">8</div>
+        <div class="day">9</div>
+        <div class="day">10</div>
+        <div class="day">11</div>
+        <div class="day">12</div>
+        <div class="day">13</div>
+        <div class="day">14</div>
+        <div class="day">15</div>
+        <div class="day">16</div>
+        <div class="day">17</div>
+        <div class="day">18</div>
+        <div class="day">19</div>
+        <div class="day">20</div>
+        <div class="day">21</div>
+        <div class="day">22</div>
+        <div class="day">23</div>
+        <div class="day">24</div>
+        <div class="day">25</div>
+        <div class="day">26</div>
+        <div class="day">27</div>
+        <div class="day">28</div>
+        <div class="day">29</div>
+        <div class="day">30</div>
+        <div class="day">31</div>
+    </div>
+
+    <!-- Ejemplo de tareas -->
+    <div class="gantt-chart">
+        <div class="task" style="width: 155px; margin-left: 0px;">Tarea 1</div>
+        <div class="task" style="width: 93px; margin-left: 0px;">Tarea 2</div>
+        <div class="task" style="width: 62px; margin-left: 186px;">Tarea 3</div>
+    </div>
+</div>
+
+</body>
+</html>

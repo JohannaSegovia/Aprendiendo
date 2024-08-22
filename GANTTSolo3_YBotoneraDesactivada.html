@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Diagrama de Gantt</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            display: flex;
+        }
+        .form-container {
+            margin-bottom: 20px;
+        }
+        .actions-container {
+            background-color: #002366; /* Azul marino oscuro */
+            color: white;
+            padding: 20px;
+            margin-right: 20px;
+            border-radius: 10px;
+            display: none; /* Ocultar al principio */
+        }
+        .actions-container button {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #002366; /* Mismo color que el contenedor */
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: not-allowed; /* Indicar que están deshabilitados */
+        }
+        .gantt-container {
+            width: 100%;
+            overflow-x: scroll;
+            border: 1px solid #ccc;
+            padding: 10px;
+            position: relative;
+            display: none; /* Se oculta hasta que se genera el diagrama */
+        }
+        .gantt-header {
+            display: flex;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            width: max-content;
+        }
+        .month {
+            text-align: center;
+            font-weight: bold;
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .days {
+            display: flex;
+            width: max-content;
+            margin-top: 30px; /* Para dar espacio a los nombres de los meses */
+        }
+        .day {
+            width: 31px;
+            text-align: center;
+            border: 1px solid #ddd;
+            flex-shrink: 0;
+        }
+        .gantt-chart {
+            display: flex;
+            margin-top: 10px;
+            width: max-content;
+        }
+        .task {
+            height: 30px;
+            background-color: #6c757d;
+            margin-right: 2px;
+            text-align: center;
+            color: white;
+            line-height: 30px;
+            border-radius: 5px;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container" id="form-container">
+    <label for="month-select">Selecciona el mes:</label>
+    <select id="month-select">
+        <option value="1">Enero</option>
+        <option value="3">Marzo</option>
+        <option value="5">Mayo</option>
+        <option value="7">Julio</option>
+        <option value="9">Septiembre</option>
+        <option value="11">Noviembre</option>
+    </select>
+    
+    <label for="year-input">Año:</label>
+    <input type="number" id="year-input" min="1900" max="2100" value="2024">
+    
+    <button id="generate-button">Generar</button>
+</div>
+
+<div class="actions-container" id="actions-container">
+    <button disabled>Acción 1</button>
+    <button disabled>Acción 2</button>
+    <button disabled>Acción 3</button>
+</div>
+
+<div class="gantt-container" id="gantt-container">
+    <!-- Aquí se generará el diagrama de Gantt dinámicamente -->
+</div>
+
+<script>
+    document.getElementById('generate-button').addEventListener('click', function() {
+        const month = parseInt(document.getElementById('month-select').value);
+        const year = parseInt(document.getElementById('year-input').value);
+        
+        const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        
+        // Días por mes, considerando años bisiestos para febrero
+        function getDaysInMonth(month, year) {
+            return new Date(year, month, 0).getDate();
+        }
+        
+        const firstMonthDays = getDaysInMonth(month, year);
+        const secondMonthDays = getDaysInMonth(month + 1, year);
+        
+        const firstMonthName = monthNames[month - 1];
+        const secondMonthName = monthNames[month];
+        
+        const ganttContainer = document.getElementById('gantt-container');
+        ganttContainer.style.display = 'block';
+        
+        // Limpiar contenido previo
+        ganttContainer.innerHTML = '';
+        
+        // Crear header con los meses
+        const header = document.createElement('div');
+        header.className = 'gantt-header';
+        
+        const firstMonthDiv = document.createElement('div');
+        firstMonthDiv.className = 'month';
+        firstMonthDiv.style.width = `${32 * firstMonthDays}px`;
+        firstMonthDiv.style.backgroundColor = '#d3d3d3';
+        firstMonthDiv.textContent = `${firstMonthName} ${year}`;
+        
+        const secondMonthDiv = document.createElement('div');
+        secondMonthDiv.className = 'month';
+        secondMonthDiv.style.width = `${32 * secondMonthDays}px`;
+        secondMonthDiv.style.backgroundColor = '#a9a9a9';
+        secondMonthDiv.textContent = `${secondMonthName} ${year}`;
+        
+        header.appendChild(firstMonthDiv);
+        header.appendChild(secondMonthDiv);
+        ganttContainer.appendChild(header);
+        
+        // Crear días
+        const daysDiv = document.createElement('div');
+        daysDiv.className = 'days';
+        
+        for (let i = 1; i <= firstMonthDays; i++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.className = 'day';
+            dayDiv.textContent = i;
+            daysDiv.appendChild(dayDiv);
+        }
+        
+        for (let i = 1; i <= secondMonthDays; i++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.className = 'day';
+            dayDiv.textContent = i;
+            daysDiv.appendChild(dayDiv);
+        }
+        
+        ganttContainer.appendChild(daysDiv);
+        
+        // Ejemplo de tareas
+        const ganttChart = document.createElement('div');
+        ganttChart.className = 'gantt-chart';
+        
+        // Agregar tareas aquí (esto es solo un ejemplo)
+        const task1 = document.createElement('div');
+        task1.className = 'task';
+        task1.style.width = '155px';
+        task1.textContent = 'Tarea 1';
+        ganttChart.appendChild(task1);
+        
+        const task2 = document.createElement('div');
+        task2.className = 'task';
+        task2.style.width = '93px';
+        task2.textContent = 'Tarea 2';
+        ganttChart.appendChild(task2);
+        
+        const task3 = document.createElement('div');
+        task3.className = 'task';
+        task3.style.width = '62px';
+        task3.style.marginLeft = '186px';
+        task3.textContent = 'Tarea 3';
+        ganttChart.appendChild(task3);
+        
+        ganttContainer.appendChild(ganttChart);
+        
+        // Mostrar el contenedor de acciones y ocultar el formulario
+        document.getElementById('actions-container').style.display = 'block';
+        document.getElementById('form-container').style.display = 'none';
+    });
+</script>
+
+</body>
+</html>

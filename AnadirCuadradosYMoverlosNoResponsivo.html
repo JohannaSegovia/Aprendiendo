@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuadrados Movibles y Guardado en CSV</title>
+    <style>
+        .square {
+            width: 100px;
+            height: 100px;
+            background-color: green;
+            position: absolute;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<button id="add-square-btn">Agregar Cuadrado</button>
+<button id="save-btn">Guardar Posiciones en CSV</button>
+<input type="file" id="file-input" accept=".csv" />
+
+<div id="container"></div>
+
+<script>
+    const container = document.getElementById('container');
+    const saveBtn = document.getElementById('save-btn');
+    const fileInput = document.getElementById('file-input');
+    const addSquareBtn = document.getElementById('add-square-btn');
+
+    let squareCount = 0;
+
+    // Función para agregar un nuevo cuadrado
+    function addSquare(left = '0px', top = '0px') {
+        squareCount++;
+        const square = document.createElement('div');
+        square.className = 'square';
+        square.id = `square${squareCount}`;
+        square.style.left = left;
+        square.style.top = top;
+        container.appendChild(square);
+        makeDraggable(square);
+    }
+
+    // Función para obtener la posición desde un objeto
+    function getPositionFromObject(obj) {
+        return obj ? [parseInt(obj.left), parseInt(obj.top)] : [0, 0];
+    }
+
+    // Función para guardar las posiciones en un archivo CSV
+    function savePositionsToCSV() {
+        const squares = document.querySelectorAll('.square');
+        let csvContent = 'id,left,top\n';
+
+        squares.forEach(square => {
+            csvContent += `${square.id},${square.style.left},${square.style.top}\n`;
+        });
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'positions.csv');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // Función para cargar las posiciones desde un archivo CSV
+    function loadPositionsFromCSV(csvContent) {
+        const lines = csvContent.split('\n');
+        lines.slice(1).forEach(line => {
+            const [id, left, top] = line.split(',');
+            const existingSquare = document.getElementById(id);
+
+            if (existingSquare) {
+                existingSquare.style.left = left;
+                existingSquare.style.top = top;
+            } else if (id.startsWith('square')) {
+                addSquare(left, top);
+            }
+        });
+    }
+
+    // Función para hacer los elementos arrastrables
+    function makeDraggable(element) {
+        let offsetX, offsetY;
+
+        element.onmousedown = function(e) {
+            e.preventDefault();
+            offsetX = e.clientX - element.getBoundingClientRect().left;
+            offsetY = e.clientY - element.getBoundingClientRect().top;
+
+            document.onmousemove = function(e) {
+                element.style.left = `${e.clientX - offsetX}px`;
+                element.style.top = `${e.clientY - offsetY}px`;
+            }
+
+            document.onmouseup = function() {
+                document.onmousemove = null;
+                document.onmouseup = null;
+            }
+        };
+    }
+
+    // Event listener para agregar un nuevo cuadrado
+    addSquareBtn.addEventListener('click', function() {
+        addSquare();
+    });
+
+    // Event listener para guardar posiciones en CSV
+    saveBtn.addEventListener('click', savePositionsToCSV);
+
+    // Event listener para cargar posiciones desde CSV
+    fileInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                loadPositionsFromCSV(e.target.result);
+            };
+            reader.readAsText(file);
+        }
+    });
+
+    // Cargar cuadrados existentes desde el CSV al iniciar (si existe uno cargado)
+    // Aquí podrías incluir lógica para automáticamente cargar un CSV guardado
+</script>
+
+</body>
+</html>

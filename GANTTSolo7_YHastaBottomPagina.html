@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Diagrama de Gantt</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            display: flex;
+        }
+        .form-container {
+            margin-bottom: 20px;
+        }
+        .actions-container {
+            background-color: #002366; /* Azul marino oscuro */
+            color: white;
+            padding: 20px;
+            margin-right: 20px;
+            border-radius: 10px;
+            display: none; /* Ocultar al principio */
+        }
+        .actions-container .section-title {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .actions-container .section-title img {
+            margin-left: 10px;
+            width: 12px;
+            height: 12px;
+        }
+        .actions-container .submenu {
+            display: none;
+            margin-left: 20px;
+        }
+        .actions-container .submenu button {
+            background-color: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            text-align: left;
+            padding: 5px 0;
+            font-size: 14px;
+            width: 100%;
+        }
+        .gantt-container {
+            width: 200%; /* Aumentar el ancho al doble */
+            height: 100vh; /* Ocupa toda la altura de la ventana */
+            overflow-x: scroll;
+            overflow-y: auto; /* Permitir desplazamiento vertical si es necesario */
+            border: 1px solid #ccc;
+            padding: 10px;
+            position: relative;
+            display: none; /* Se oculta hasta que se genera el diagrama */
+        }
+        .gantt-header {
+            display: flex;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            width: max-content;
+        }
+        .month {
+            text-align: center;
+            font-weight: bold;
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .days {
+            display: flex;
+            width: max-content;
+            margin-top: 30px; /* Para dar espacio a los nombres de los meses */
+            position: relative;
+        }
+        .day {
+            width: 31px;
+            text-align: center;
+            border: 1px solid #ddd;
+            flex-shrink: 0;
+        }
+        .weekend {
+            background-color: #A9A9A9; /* Gris oscuro */
+        }
+        .today-line {
+            position: absolute;
+            width: 2px;
+            height: calc(100% + 20px); /* Aumentar la altura para cubrir todo el contenedor */
+            background-color: red;
+            z-index: 2;
+        }
+        .gantt-chart {
+            display: flex;
+            margin-top: 10px;
+            width: max-content;
+        }
+        .task {
+            height: 30px;
+            background-color: #6c757d;
+            margin-right: 2px;
+            text-align: center;
+            color: white;
+            line-height: 30px;
+            border-radius: 5px;
+            flex-shrink: 0;
+        }
+        .rectangulo {
+            width: 50px;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .texto-vertical {
+            position: absolute;
+            writing-mode: vertical-rl;
+            transform: translate(-50%, -50%) rotate(180deg);
+            top: 50%;
+            left: 50%;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .barra {
+            width: 100%;
+            height: 1px;
+            background-color: #808080;
+            margin-top: 0px;
+        }
+
+        .contenedor {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-top: 20px;
+            cursor: grab;
+            position: absolute;
+        }
+
+        .modificable {
+            cursor: grabbing;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container" id="form-container">
+    <label for="month-select">Selecciona el mes:</label>
+    <select id="month-select">
+        <option value="1">Enero</option>
+        <option value="3">Marzo</option>
+        <option value="5">Mayo</option>
+        <option value="7">Julio</option>
+        <option value="9">Septiembre</option>
+        <option value="11">Noviembre</option>
+    </select>
+    
+    <label for="year-input">Año:</label>
+    <input type="number" id="year-input" min="1900" max="2100" value="2024">
+    
+    <button id="generate-button">Generar</button>
+</div>
+
+<div class="actions-container" id="actions-container">
+    <!-- Sección Configuración -->
+    <div class="section-title" id="config-section">
+        Configuración
+        <img src="data:image/png;base64,..." alt="Arrow Icon" id="config-arrow-icon">
+    </div>
+    <div class="submenu" id="config-menu">
+        <button id="add-swimline">Añadir swimline</button>
+        <button id="modify-height">Modificar altura</button>
+        <button id="modify-text">Modificar texto</button>
+    </div>
+
+    <!-- Sección Items -->
+    <div class="section-title" id="items-section">
+        Items
+        <img src="data:image/png;base64,..." alt="Arrow Icon" id="items-arrow-icon">
+    </div>
+    <div class="submenu" id="items-menu">
+        <button id="add-item">Añadir item</button>
+    </div>
+
+    <!-- Sección Exportar -->
+    <div class="section-title" id="export-section">
+        Exportar
+        <img src="data:image/png;base64,..." alt="Arrow Icon" id="export-arrow-icon">
+    </div>
+    <div class="submenu" id="export-menu">
+        <button id="export-pdf">Exportar PDF</button>
+        <button id="save-changes">Guardar cambios</button>
+    </div>
+</div>
+
+<div class="gantt-container" id="gantt-container">
+    <!-- Aquí se generará el diagrama de Gantt dinámicamente -->
+</div>
+
+<script>
+    // Función para alternar submenús
+    function toggleMenu(sectionId, menuId, arrowIconId) {
+        const menu = document.getElementById(menuId);
+        const arrowIcon = document.getElementById(arrowIconId);
+        if (menu.style.display === 'none' || menu.style.display === '') {
+            menu.style.display = 'block';
+            arrowIcon.style.transform = 'rotate(180deg)';
+        } else {
+            menu.style.display = 'none';
+            arrowIcon.style.transform = 'rotate(0deg)';
+        }
+    }
+
+    // Configuración de los toggles
+    document.getElementById('config-section').addEventListener('click', function() {
+        toggleMenu('config-section', 'config-menu', 'config-arrow-icon');
+    });
+    document.getElementById('items-section').addEventListener('click', function() {
+        toggleMenu('items-section', 'items-menu', 'items-arrow-icon');
+    });
+    document.getElementById('export-section').addEventListener('click', function() {
+        toggleMenu('export-section', 'export-menu', 'export-arrow-icon');
+    });
+
+    // Mensajes de alerta para los botones
+    document.getElementById('add-swimline').addEventListener('click', function() {
+        // Lógica para añadir swimline al contenedor Gantt
+        addSwimline();
+    });
+
+    document.getElementById('modify-height').addEventListener('click', function() {
+        alert('In progress');
+    });
+    document.getElementById('modify-text').addEventListener('click', function() {
+        alert('In progress');
+    });
+
+    document.getElementById('add-item').addEventListener('click', function() {
+        alert('In progress');
+    });
+
+    document.getElementById('export-pdf').addEventListener('click', function() {
+        alert('In progress');
+    });
+    document.getElementById('save-changes').addEventListener('click', function() {
+        alert('In progress');
+    });
+
+    document.getElementById('generate-button').addEventListener('click', function() {
+        const month = parseInt(document.getElementById('month-select').value);
+        const year = parseInt(document.getElementById('year-input').value);
+        
+        const today = new Date();
+        
+        const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        
+        // Días por mes, considerando años bisiestos para febrero
+        function getDaysInMonth(month, year) {
+            return new Date(year, month, 0).getDate();
+        }
+        
+        const firstMonthDays = getDaysInMonth(month, year);
+        const secondMonthDays = getDaysInMonth(month + 1, year);
+        
+        const firstMonthName = monthNames[month - 1];
+        const secondMonthName = monthNames[month];
+        
+        const ganttContainer = document.getElementById('gantt-container');
+        ganttContainer.style.display = 'block';
+        
+        // Limpiar contenido previo
+        ganttContainer.innerHTML = '';
+        
+        // Crear header con los meses
+        const header = document.createElement('div');
+        header.className = 'gantt-header';
+        
+        const firstMonthDiv = document.createElement('div');
+        firstMonthDiv.className = 'month';
+        firstMonthDiv.style.width = `${32 * firstMonthDays}px`;
+        firstMonthDiv.style.backgroundColor = '#d3d3d3';
+        firstMonthDiv.textContent = `${firstMonthName} ${year}`;
+        
+        const secondMonthDiv = document.createElement('div');
+        secondMonthDiv.className = 'month';
+        secondMonthDiv.style.width = `${32 * secondMonthDays}px`;
+        secondMonthDiv.style.backgroundColor = '#a9a9a9';
+        secondMonthDiv.textContent = `${secondMonthName} ${year}`;
+        
+        header.appendChild(firstMonthDiv);
+        header.appendChild(secondMonthDiv);
+        ganttContainer.appendChild(header);
+        
+        // Crear días
+        const daysDiv = document.createElement('div');
+        daysDiv.className = 'days';
+        
+        let todayElement = null;
+        
+        for (let i = 1; i <= firstMonthDays; i++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.className = 'day';
+            dayDiv.id = `day-${year}-${month}-${i}`;  // Asignar un ID único a cada día
+            
+            const date = new Date(year, month - 1, i);
+            if (date.getDay() === 6 || date.getDay() === 0) { // 0 = Domingo, 6 = Sábado
+                dayDiv.classList.add('weekend');
+            }
+            if (today.getFullYear() === year && today.getMonth() + 1 === month && today.getDate() === i) {
+                todayElement = dayDiv;
+            }
+            dayDiv.textContent = i;
+            daysDiv.appendChild(dayDiv);
+        }
+        
+        for (let i = 1; i <= secondMonthDays; i++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.className = 'day';
+            dayDiv.id = `day-${year}-${month + 1}-${i}`;  // Asignar un ID único a cada día
+            
+            const date = new Date(year, month, i);
+            if (date.getDay() === 6 || date.getDay() === 0) { // 0 = Domingo, 6 = Sábado
+                dayDiv.classList.add('weekend');
+            }
+            if (today.getFullYear() === year && today.getMonth() + 1 === month + 1 && today.getDate() === i) {
+                todayElement = dayDiv;
+            }
+            dayDiv.textContent = i;
+            daysDiv.appendChild(dayDiv);
+        }
+        
+        ganttContainer.appendChild(daysDiv);
+        
+        // Si hoy corresponde a algún día mostrado, dibuja la línea
+        if (todayElement !== null) {
+            const rect = todayElement.getBoundingClientRect();
+            const containerRect = ganttContainer.getBoundingClientRect();
+            const todayLine = document.createElement('div');
+            todayLine.className = 'today-line';
+            todayLine.style.left = `${rect.left - containerRect.left}px`; // Posición relativa al contenedor
+            daysDiv.appendChild(todayLine);
+        }
+        
+        // Ejemplo de tareas
+        const ganttChart = document.createElement('div');
+        ganttChart.className = 'gantt-chart';
+        
+       
+        
+        ganttContainer.appendChild(ganttChart);
+        
+        // Mostrar el contenedor de acciones y ocultar el formulario
+        document.getElementById('actions-container').style.display = 'block';
+        document.getElementById('form-container').style.display = 'none';
+    });
+
+function addSwimline() {
+    // Preguntar por el color
+    let color = prompt("Elige un color para el rectángulo (en formato hexadecimal o usa la rueda de colores):", "#add8e6");
+
+    // Preguntar por el texto
+    let texto = prompt("Introduce el texto para el rectángulo:", "Texto");
+
+    // Preguntar por el número de líneas
+    let lineas = parseInt(prompt("¿Cuántas líneas de texto (1, 2 o 3)?", "1"));
+
+    // Calcular la altura del rectángulo basado en el número de líneas
+    let alturaRectangulo;
+    switch (lineas) {
+        case 1:
+            alturaRectangulo = 100;
+            break;
+        case 2:
+            alturaRectangulo = 250;
+            break;
+        case 3:
+            alturaRectangulo = 400;
+            break;
+        default:
+            alturaRectangulo = 100; // Valor por defecto si la entrada no es válida
+    }
+
+    // Crear el contenedor del grupo
+    let contenedor = document.createElement('div');
+    contenedor.className = 'contenedor';
+
+    // Calcular la posición vertical más baja de todos los elementos existentes
+    let ganttContainer = document.getElementById('gantt-container');
+    let nuevaPosicionTop = Array.from(ganttContainer.children).reduce((maxTop, child) => {
+        const childTop = child.offsetTop + child.offsetHeight;
+        return Math.max(maxTop, childTop);
+    }, 0);
+
+    // Añadir un pequeño margen entre el último elemento y el nuevo
+    nuevaPosicionTop += 10;
+
+    contenedor.style.top = `${nuevaPosicionTop}px`;
+
+    // Crear el rectángulo
+    let rectangulo = document.createElement('div');
+    rectangulo.className = 'rectangulo';
+    rectangulo.style.backgroundColor = color;
+    rectangulo.style.height = `${alturaRectangulo}px`;
+
+    // Crear el texto vertical
+    let textoVertical = document.createElement('div');
+    textoVertical.className = 'texto-vertical';
+    textoVertical.textContent = texto;
+
+    // Añadir el texto dentro del rectángulo
+    rectangulo.appendChild(textoVertical);
+
+    // Crear la barra
+    let barra = document.createElement('div');
+    barra.className = 'barra';
+    barra.style.width = ganttContainer.scrollWidth + "px"; // Ajustar la barra al ancho del contenedor Gantt
+
+    // Añadir el rectángulo y la barra al contenedor
+    contenedor.appendChild(rectangulo);
+    contenedor.appendChild(barra);
+
+    // Añadir el contenedor al contenedor principal (gantt-container)
+    ganttContainer.appendChild(contenedor);
+
+    // Añadir funcionalidad de drag
+    agregarDragVertical(contenedor);
+}
+
+
+    function agregarDragVertical(elemento) {
+        if (!elemento) {
+            console.error("Elemento no encontrado para agregar evento de arrastre.");
+            return;
+        }
+        let offsetY = 0;
+        let startY = 0;
+        let isDragging = false;
+
+        elemento.addEventListener('mousedown', function(e) {
+            isDragging = true;
+            startY = elemento.getBoundingClientRect().top;
+            offsetY = e.clientY - startY;
+            elemento.style.cursor = 'grabbing';
+            elemento.style.zIndex = 1000;  // Traer el elemento al frente
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (isDragging) {
+                let newY = e.clientY - offsetY;
+                elemento.style.top = `${newY}px`;
+            }
+        });
+
+        document.addEventListener('mouseup', function() {
+            isDragging = false;
+            elemento.style.cursor = 'grab';
+            elemento.style.zIndex = '';  // Restablecer el z-index
+        });
+
+        // Evitar selección de texto mientras se arrastra
+        elemento.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+        });
+    }
+</script>
+
+</body>
+</html>
