@@ -57,10 +57,10 @@
 
         /* ***************** DEBAJO DEL HEADER ***************** */
         .debajoCabecera {
-            background-color: #6db9ec;
+            /*background-color: #6db9ec;*/
             display: flex;
             flex-direction: row;
-            /*height: 100vh;
+            height: 100vh;
             /*display: none;*/
         }
         .botonera {
@@ -90,7 +90,7 @@
             font-size: 14px;
         }
         .botonera_submenu {
-            /*display: none;*/ /*Cuando cargue la pagina por primera vez esto tiene que quedar oculto pero por ahora lo dejamos abierto*/
+            display: none; /*Cuando cargue la pagina por primera vez esto tiene que quedar oculto pero por ahora lo dejamos abierto*/
             margin-left: 20px;
             margin-bottom: 10px;
         }
@@ -104,7 +104,44 @@
             font-size: 14px;
             width: 100%;
         }
-
+        .areaPrincipal {
+            /*background-color: #efef3f;*/
+            padding: 10px;
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            border-radius: 10px;
+            border: 1px solid black;
+            /*color: white;*/
+        }
+        .areaSwimline {
+            background-color: #efef3f;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            border: 1px solid black;
+            /*color: white;*/
+        }
+        /* ***************** ESTA ES LA PARTE DEL CALENDARIO ***************** */
+        .areaCalendario {
+            padding: 10px;
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            border: 1px solid black;
+        }
+        table {
+            width: auto; /* Cambié esto de 100% a auto para que la tabla no ocupe todo el ancho */
+            border-collapse: collapse;
+        }
+        th, td {
+            border-left: 1px solid rgb(255, 0, 0);
+            border-right: 1px solid rgb(255, 0, 0);
+            text-align: center;
+            width: 30px; /* Ancho fijo de cada celda */
+            height: 30px; /* Alto fijo de cada celda */
+        }
         
 
 
@@ -179,10 +216,10 @@
     <div class="debajoCabecera">
         <div class="botonera">
             <div class="botonera_seccionTitulo" id="config-section">Configuration<!--<img src="data:image/png;base64,..." alt="Arrow Icon" id="config-arrow-icon">--></div>
-            <div class="selectBox">
-                <input type="checkbox" name="opcion1" value="valor1">Enable changes
-            </div>
             <div class="botonera_submenu">
+                <div class="selectBox">
+                    <input type="checkbox" name="opcion1" value="valor1">Enable changes
+                </div>
                 <button id="add-swimline">Añadir swimline</button>
                 <button id="modify-height">Modificar altura</button>
                 <button id="modify-text">Modificar texto</button>
@@ -201,16 +238,33 @@
                 <button id="save-changes">Importar ficheros</button>
             </div>
         </div>
-        <div class="areaPrincipal"></div>
+        <div class="areaPrincipal">
+            <div class="areaSwimline">HOLA</div>
+            <div class="areaCalendario">
+                <table>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th colspan="31" style="background-color: lightgreen;">Agosto</th>
+                            <th colspan="30" style="background-color: lightyellow;">Septiembre</th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th>
+                            <th>11</th><th>12</th><th>13</th><th>14</th><th>15</th><th>16</th><th>17</th><th>18</th><th>19</th><th>20</th>
+                            <th>21</th><th>22</th><th>23</th><th>24</th><th>25</th><th>26</th><th>27</th><th>28</th><th>29</th><th>30</th><th>31</th>
+                            <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th>
+                            <th>11</th><th>12</th><th>13</th><th>14</th><th>15</th><th>16</th><th>17</th><th>18</th><th>19</th><th>20</th>
+                            <th>21</th><th>22</th><th>23</th><th>24</th><th>25</th><th>26</th><th>27</th><th>28</th><th>29</th><th>30</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-
-
-
-
-
-
-
-
-
 </body>
 </html>
